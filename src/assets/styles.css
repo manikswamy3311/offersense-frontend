@@ -646,3 +646,155 @@ ul {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==================== Segment Card Styles ==================== */
+.segment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.segment-card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  border-left: 5px solid var(--primary-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.segment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.segment-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.segment-name {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.segment-percentage {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+.segment-count {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: var(--spacing-sm) 0;
+}
+
+.segment-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.segment-metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.segment-metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.segment-metric-value {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.growth-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  margin-top: var(--spacing-xs);
+}
+
+.growth-indicator.positive {
+  color: var(--success-color);
+}
+
+.growth-indicator.negative {
+  color: var(--error-color);
+}
+
+.engagement-badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.engagement-badge.high {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.engagement-badge.medium {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.engagement-badge.low {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* ==================== Demographics Section ==================== */
+.demographics-section {
+  margin-top: var(--spacing-xl);
+}
+
+.demographics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+}
+
+@media (max-width: 1024px) {
+  .segment-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .demographics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .segment-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .segment-metrics {
+    grid-template-columns: 1fr;
+  }
+}
