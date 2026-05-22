@@ -798,3 +798,210 @@ ul {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==================== Offer Card Styles ==================== */
+.offer-card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  border-left: 5px solid var(--primary-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: var(--spacing-md);
+}
+
+.offer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.offer-card.top-performer {
+  border-left-color: var(--success-color);
+  background: linear-gradient(to right, #e8f5e9 0%, var(--bg-secondary) 20%);
+}
+
+.offer-card.poor-performer {
+  border-left-color: var(--error-color);
+  background: linear-gradient(to right, #ffebee 0%, var(--bg-secondary) 20%);
+}
+
+.offer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.offer-name {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.offer-code {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-family: monospace;
+  background-color: var(--bg-primary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+}
+
+.offer-badges {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.offer-type-badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+.performance-badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.performance-badge.high {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.performance-badge.medium {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.performance-badge.low {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.offer-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.offer-metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.offer-metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.offer-metric-value {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ==================== Performance Matrix ==================== */
+.performance-matrix {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.matrix-cell {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.matrix-cell:hover {
+  transform: scale(1.02);
+}
+
+.matrix-cell.winners {
+  border: 2px solid var(--success-color);
+  background: linear-gradient(135deg, #e8f5e9 0%, var(--bg-secondary) 100%);
+}
+
+.matrix-cell.gems {
+  border: 2px solid var(--info-color);
+  background: linear-gradient(135deg, #e3f2fd 0%, var(--bg-secondary) 100%);
+}
+
+.matrix-cell.review {
+  border: 2px solid var(--warning-color);
+  background: linear-gradient(135deg, #fff3e0 0%, var(--bg-secondary) 100%);
+}
+
+.matrix-cell.underperformers {
+  border: 2px solid var(--error-color);
+  background: linear-gradient(135deg, #ffebee 0%, var(--bg-secondary) 100%);
+}
+
+.matrix-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.matrix-count {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+}
+
+.matrix-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* ==================== Top/Bottom Performers ==================== */
+.performers-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.performers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 1024px) {
+  .offer-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .performance-matrix {
+    grid-template-columns: 1fr;
+  }
+  
+  .performers-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .offer-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
