@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import KPIBox from '../components/KPIBox';
 import ChartCard from '../components/ChartCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 import { getOfferEffectiveness } from '../services/api';
 import {
   BarChart,
@@ -207,13 +209,15 @@ const OfferEffectiveness = () => {
   const [offers, setOffers] = useState(mockOffers);
   const [filteredOffers, setFilteredOffers] = useState(mockOffers);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-  useEffect(() => {
-    // Try to fetch from API, fallback to mock data
+  const fetchData = () => {
+    setLoading(true);
+    setError(null);
     getOfferEffectiveness()
       .then((data) => {
         setOffers(data);
@@ -221,11 +225,14 @@ const OfferEffectiveness = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log("Using mock offer data");
         setOffers(mockOffers);
         setFilteredOffers(mockOffers);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   // Filter logic
@@ -309,6 +316,49 @@ const OfferEffectiveness = () => {
   const gems = offers.filter(o => o.roi >= 4 && o.redemptionRate < 7).length;
   const review = offers.filter(o => o.roi < 4 && o.redemptionRate >= 7).length;
   const underperformers = offers.filter(o => o.roi < 4 && o.redemptionRate < 7).length;
+
+  // Export to CSV function
+  const exportToCSV = () => {
+    const headers = ['Offer Name', 'Code', 'Type', 'Redemptions', 'Rate %', 'Revenue', 'Cost', 'ROI', 'Status'];
+    const csvData = filteredOffers.map(o => [
+      o.name,
+      o.code,
+      o.type,
+      o.redemptionCount,
+      o.redemptionRate.toFixed(2),
+      o.revenueGenerated,
+      o.cost,
+      o.roi.toFixed(2),
+      o.status
+    ]);
+    
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => row.join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `offer-effectiveness-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  if (loading) return (
+    <div>
+      <Navbar />
+      <LoadingSpinner message="Loading offer data..." />
+    </div>
+  );
+
+  if (error) return (
+    <div>
+      <Navbar />
+      <ErrorMessage message={error} onRetry={fetchData} />
+    </div>
+  );
 
   return (
     <div>
@@ -466,6 +516,9 @@ const OfferEffectiveness = () => {
               Clear Filters
             </button>
           )}
+          <button className="export-btn" onClick={exportToCSV}>
+            📥 Export CSV
+          </button>
           <span className="results-count">
             Showing {filteredOffers.length} of {offers.length} offers
           </span>

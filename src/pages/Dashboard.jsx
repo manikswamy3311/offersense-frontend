@@ -3,6 +3,8 @@ import { getKPIs, getTrendData } from "../services/api";
 import Navbar from "../components/Navbar";
 import KPIBox from "../components/KPIBox";
 import ChartCard from "../components/ChartCard";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
 import {
   LineChart,
   Line,
@@ -20,6 +22,7 @@ function Dashboard() {
   const [data, setData] = useState(null);
   const [trendData, setTrendData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Mock trend data for charts (last 7 days)
   const mockTrendData = [
@@ -38,15 +41,17 @@ function Dashboard() {
     { metric: "Conversions", value: 2400, target: 2500 },
   ];
 
-  useEffect(() => {
+  const fetchData = () => {
+    setLoading(true);
+    setError(null);
+    
     getKPIs()
       .then((res) => {
-        console.log("API RESPONSE:", res);
         setData(res);
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
+        setError('Failed to load KPI data');
         setLoading(false);
       });
 
@@ -56,14 +61,34 @@ function Dashboard() {
         setTrendData(res);
       })
       .catch((err) => {
-        console.log("Using mock trend data");
         setTrendData(mockTrendData);
       });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  if (loading) return <div className="loading">Loading</div>;
+  if (loading) return (
+    <div>
+      <Navbar />
+      <LoadingSpinner message="Loading dashboard data..." />
+    </div>
+  );
 
-  if (!data) return <div className="error-message">Failed to load data</div>;
+  if (error) return (
+    <div>
+      <Navbar />
+      <ErrorMessage message={error} onRetry={fetchData} />
+    </div>
+  );
+
+  if (!data) return (
+    <div>
+      <Navbar />
+      <ErrorMessage message="No data available" onRetry={fetchData} />
+    </div>
+  );
 
   const displayTrendData = trendData || mockTrendData;
 

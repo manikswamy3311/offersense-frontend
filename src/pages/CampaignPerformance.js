@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import KPIBox from '../components/KPIBox';
 import ChartCard from '../components/ChartCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 import { getCampaignData } from '../services/api';
 import {
   BarChart,
@@ -147,12 +149,14 @@ const CampaignPerformance = () => {
   const [campaigns, setCampaigns] = useState(mockCampaigns);
   const [filteredCampaigns, setFilteredCampaigns] = useState(mockCampaigns);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-  useEffect(() => {
-    // Try to fetch from API, fallback to mock data
+  const fetchData = () => {
+    setLoading(true);
+    setError(null);
     getCampaignData()
       .then((data) => {
         setCampaigns(data);
@@ -160,11 +164,14 @@ const CampaignPerformance = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log("Using mock campaign data");
         setCampaigns(mockCampaigns);
         setFilteredCampaigns(mockCampaigns);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   // Filter and search logic
@@ -229,6 +236,48 @@ const CampaignPerformance = () => {
     name: c.name.length > 20 ? c.name.substring(0, 20) + '...' : c.name,
     value: c.spend,
   }));
+
+  // Export to CSV function
+  const exportToCSV = () => {
+    const headers = ['Campaign Name', 'Impressions', 'Clicks', 'Conversions', 'CTR %', 'Conv. Rate %', 'Spend', 'Status'];
+    const csvData = filteredCampaigns.map(c => [
+      c.name,
+      c.impressions,
+      c.clicks,
+      c.conversions,
+      c.ctr.toFixed(2),
+      c.conversionRate.toFixed(2),
+      c.spend,
+      c.status
+    ]);
+    
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => row.join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `campaign-performance-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  if (loading) return (
+    <div>
+      <Navbar />
+      <LoadingSpinner message="Loading campaign data..." />
+    </div>
+  );
+
+  if (error) return (
+    <div>
+      <Navbar />
+      <ErrorMessage message={error} onRetry={fetchData} />
+    </div>
+  );
 
   return (
     <div>
@@ -303,6 +352,9 @@ const CampaignPerformance = () => {
               Clear Filters
             </button>
           )}
+          <button className="export-btn" onClick={exportToCSV}>
+            📥 Export CSV
+          </button>
           <span className="results-count">
             Showing {filteredCampaigns.length} of {campaigns.length} campaigns
           </span>

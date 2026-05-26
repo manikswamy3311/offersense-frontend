@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import KPIBox from '../components/KPIBox';
 import ChartCard from '../components/ChartCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 import { getCustomerSegments } from '../services/api';
 import {
   PieChart,
@@ -118,20 +120,25 @@ const channelPreferenceData = [
 const CustomerSegments = () => {
   const [segments, setSegments] = useState(mockSegments);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-  useEffect(() => {
-    // Try to fetch from API, fallback to mock data
+  const fetchData = () => {
+    setLoading(true);
+    setError(null);
     getCustomerSegments()
       .then((data) => {
         setSegments(data);
         setLoading(false);
       })
       .catch((err) => {
-        console.log("Using mock segment data");
         setSegments(mockSegments);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   // Sorting function
@@ -160,12 +167,54 @@ const CustomerSegments = () => {
     {}
   );
 
-  // Prepare revenue comparison chart data
+  // Prepare chart data (top 5 campaigns by conversions)
   const revenueComparisonData = segments.map(s => ({
     name: s.name.length > 15 ? s.name.substring(0, 15) + '...' : s.name,
     revenue: s.totalRevenue / 1000, // in thousands
     aov: s.avgOrderValue,
   }));
+
+  // Export to CSV function
+  const exportToCSV = () => {
+    const headers = ['Segment', 'Customers', '% of Total', 'Revenue', 'AOV', 'Purchase Freq', 'Engagement', 'Growth'];
+    const csvData = segments.map(s => [
+      s.name,
+      s.customerCount,
+      s.percentage,
+      s.totalRevenue,
+      s.avgOrderValue,
+      s.purchaseFrequency,
+      s.engagementScore,
+      s.growth
+    ]);
+    
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => row.join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `customer-segments-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  if (loading) return (
+    <div>
+      <Navbar />
+      <LoadingSpinner message="Loading customer segment data..." />
+    </div>
+  );
+
+  if (error) return (
+    <div>
+      <Navbar />
+      <ErrorMessage message={error} onRetry={fetchData} />
+    </div>
+  );
 
   return (
     <div>
@@ -174,6 +223,9 @@ const CustomerSegments = () => {
         <div className="page-header">
           <h1>Customer Segments</h1>
           <p>Understand your customer base through segmentation analysis</p>
+          <button className="export-btn" onClick={exportToCSV} style={{ marginTop: '1rem' }}>
+            📥 Export CSV
+          </button>
         </div>
 
         {/* KPI Summary */}
